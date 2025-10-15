@@ -17,8 +17,22 @@ public class GameManager : MonoBehaviour
     private float meteorTimer_ = 0.0f;
     [SerializeField]
     private List<Transform> spawnPositions_;
-    public void AddScore(int point) { }
-    public void Damage(int point) { }
+
+    [SerializeField,Header("ScoreUISetting")]
+    private ScoreText scoreText_;
+    private int score_;
+
+    [SerializeField, Header("LifeUISettings")]
+    private LifeBar lifeBar_;
+    [SerializeField]private float maxLife_ = 10.0f;
+    private float life_;
+    public void AddScore(int point) {
+        score_ += point;
+        scoreText_.SetScore(score_);
+    
+    
+    }
+ 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,6 +44,7 @@ public class GameManager : MonoBehaviour
         {
             Assert.IsNotNull(t, "spawnPositions‚Énull‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·");
         }
+        ResetLife();
     }
 
         // Update is called once per frame
@@ -65,7 +80,20 @@ public class GameManager : MonoBehaviour
 
     
     }
-    
 
+    private void ResetLife()
+    {
+        life_ = maxLife_;
+        UpdateLifeBar();
+        
+    }
+    private void UpdateLifeBar() {
+        float lifeRatio = Mathf.Clamp01(life_ / maxLife_);
+        lifeBar_.SetGaugeRatio(lifeRatio);
 
+    }
+    public void Damage(float point) {
+        life_ -= point;
+        UpdateLifeBar();
+    }
 }
