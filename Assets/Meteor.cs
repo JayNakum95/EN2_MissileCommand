@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class Meteor : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     [SerializeField] private float fallSpeedMin_ = 1.0f;
     [SerializeField] private float fallSpeedMax_ = 3.0f;
     [SerializeField] ScoreEffect scoreEffectPrefab_;
     private Explosion explosionPrefab_;
     private BoxCollider2D groundCollider_;
-    // Change the type of rb_ from Rigidbody to Rigidbody2D
     private Rigidbody2D rb_;
     private GameManager gameManager_;
     void Start()
@@ -71,7 +69,6 @@ public class Meteor : MonoBehaviour
         gameManager_.Damage(1);
         Destroy(gameObject);
     }
-    // Update is called once per frame
     void Update()
     {
 
