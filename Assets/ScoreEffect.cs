@@ -8,7 +8,7 @@ public class ScoreEffect : MonoBehaviour
     float upSpeed = 1f;
 
     [SerializeField]
-    float lifeTime = 1f; // duration of the effect in seconds
+    float lifeTime = 1f; 
 
     float aliveTimer = 0f;
 
