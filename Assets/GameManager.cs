@@ -6,10 +6,14 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     private Camera mainCamera_;
-    [SerializeField,Header("Prefab")]
+    [SerializeField, Header("Prefab")]
     private Explosion explosionPrefab_;
     [SerializeField]
     private Meteor meteorPrefab_;
+    [SerializeField]
+    private GameObject reticlePrefab_;
+    [SerializeField]
+    private Missile missilePrefab_;
     [SerializeField, Header("MeteorSpawner")]
     private BoxCollider2D ground_;
     [SerializeField]
@@ -18,21 +22,21 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private List<Transform> spawnPositions_;
 
-    [SerializeField,Header("ScoreUISetting")]
+    [SerializeField, Header("ScoreUISetting")]
     private ScoreText scoreText_;
     private int score_;
 
     [SerializeField, Header("LifeUISettings")]
     private LifeBar lifeBar_;
-    [SerializeField]private float maxLife_ = 10.0f;
+    [SerializeField] private float maxLife_ = 10.0f;
     private float life_;
     public void AddScore(int point) {
         score_ += point;
         scoreText_.SetScore(score_);
-    
-    
+
+
     }
- 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -47,24 +51,35 @@ public class GameManager : MonoBehaviour
         ResetLife();
     }
 
-        // Update is called once per frame
-        void Update()
+    // Update is called once per frame
+    void Update()
     {
         if (Input.GetMouseButtonDown(0)) {
-            GenerateExplosion();
+            GenerateMissile();
         }
         UpdateMeteorTimer();
     }
 
 
-    private void GenerateExplosion() {
-        Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
-        clickPosition.z = 0.0f;
-        Explosion explosion = Instantiate(explosionPrefab_, clickPosition, Quaternion.identity);
+    //private void GenerateExplosion() {
+    //    Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
+    //    clickPosition.z = 0.0f;
+    //    Explosion explosion = Instantiate(explosionPrefab_, clickPosition, Quaternion.identity);
 
+
+    //}
+    private void GenerateMissile() { 
+    
+    Vector3 ClickPosition= mainCamera_.ScreenToWorldPoint(Input.mousePosition);
+        ClickPosition.z = 0.0f;
+        GameObject reticle = Instantiate(reticlePrefab_, ClickPosition, Quaternion.identity);
+        Vector3 LaunchPosition = new Vector3(0,-3,0);
+        Missile missile = Instantiate(missilePrefab_, LaunchPosition, Quaternion.identity);
+        missile.SetUp(reticle);
 
     }
-    private void UpdateMeteorTimer() {
+
+        private void UpdateMeteorTimer() {
         meteorTimer_ -= Time.deltaTime;
         if (meteorTimer_ > 0) { return; }
         meteorTimer_ += meteorInterval_;
