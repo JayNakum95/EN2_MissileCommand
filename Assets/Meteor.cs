@@ -10,6 +10,7 @@ public class Meteor : MonoBehaviour
     private BoxCollider2D groundCollider_;
     private Rigidbody2D rb_;
     private GameManager gameManager_;
+    
     void Start()
     {
         rb_ = GetComponent<Rigidbody2D>();
@@ -38,26 +39,31 @@ public class Meteor : MonoBehaviour
 
 
     }
-    private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.gameObject.CompareTag("Explosion")) { 
-        Explosion();
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Explosion explosion;
+        if (collision.gameObject.CompareTag("Explosion")&& collision.TryGetComponent(out explosion))
+        {
+            Explosion(explosion);
 
         }
         if (collision.gameObject.CompareTag("Ground"))
         {
             Fall();
         }
+    }
 
 
-
-        }
-    private void Explosion() {
-        int score = 100;
+    private void Explosion(Explosion otherExplosion) {
+        int chainNum = otherExplosion.chainNum + 1;
+        int score = chainNum * 100;
         ScoreEffect scoreEffect = Instantiate(scoreEffectPrefab_, transform.position, Quaternion.identity);
         scoreEffect.SetScore(score);
 
         gameManager_.AddScore(score);
+            Explosion explosion =
         Instantiate(explosionPrefab_, transform.position, Quaternion.identity);
+        explosion.chainNum = chainNum;
         Destroy(gameObject);
 
 
