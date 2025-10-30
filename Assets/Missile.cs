@@ -8,7 +8,6 @@ public class Missile : MonoBehaviour
     [SerializeField] private float speed_;
     private Vector3 velocity;
     private GameObject reticle_;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     public void SetUp(GameObject reticle)
     {
