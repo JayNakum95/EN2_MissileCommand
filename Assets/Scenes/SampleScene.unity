@@ -222,6 +222,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 651971684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &419004442
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 419004443}
+  m_Layer: 0
+  m_Name: ItemSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &419004443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 419004442}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -11.21, y: 2.77, z: -0.07898106}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &428202881
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,6 +1069,11 @@ MonoBehaviour:
   meteorPrefab_: {fileID: 3500018298616375989, guid: 4c1e4ce5a57c0aa4aa4f8b2d824a3390, type: 3}
   reticlePrefab_: {fileID: 4276941308291208400, guid: 727d91f3a52b1a745956ba25b5c93878, type: 3}
   missilePrefab_: {fileID: 8939164596549411014, guid: 3c1b6a35bcbc3244bba673dbb9b196ed, type: 3}
+  items_:
+  - {fileID: 2320366063106311395, guid: fedf46c40025a9e4dba5e776606026d3, type: 3}
+  - {fileID: 6195260224445517206, guid: b5c65687f733cae49a79500c8706c4e5, type: 3}
+  itemSpawnPosition_: {fileID: 419004443}
+  itemSpawnInterval_: 10
   launcherPrefab_: {fileID: 8621658945081263696, guid: d3b8b3ec2603cda41b51e2d4bb10b1e1, type: 3}
   ground_: {fileID: 1489624590}
   meteorInterval_: 1
@@ -1501,3 +1537,4 @@ SceneRoots:
   - {fileID: 1489624589}
   - {fileID: 651971684}
   - {fileID: 1760948047}
+  - {fileID: 419004443}

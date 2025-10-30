@@ -3,20 +3,27 @@
     //using UnityEngine.Assertions;
     using System.Collections.Generic;
 
-    public class GameManager : MonoBehaviour
-    {
-        private Camera mainCamera_;
-        [SerializeField, Header("Prefab")]
-        private Explosion explosionPrefab_;
-        [SerializeField]
-        private Meteor meteorPrefab_;
-        [SerializeField]
-        private GameObject reticlePrefab_;
-        [SerializeField]
-        private Missile missilePrefab_;
+public class GameManager : MonoBehaviour
+{
+    private Camera mainCamera_;
+    [SerializeField, Header("Prefab")]
+    private Explosion explosionPrefab_;
+    [SerializeField]
+    private Meteor meteorPrefab_;
+    [SerializeField]
+    private GameObject reticlePrefab_;
+    [SerializeField]
+    private Missile missilePrefab_;
+    [SerializeField]
+    List<ItemBase> items_;
+    [SerializeField,Header("ItemSetting")]
+    private Transform itemSpawnPosition_;
+    [SerializeField]
+    private float itemSpawnInterval_ = 10.0f;
+    private float itemTimer_ = 0.0f;
 
-        // NEW: Prefab used to show launcher sprite at each launch position
-        [SerializeField, Header("Launcher")]
+    // NEW: Prefab used to show launcher sprite at each launch position
+    [SerializeField, Header("Launcher")]
         private GameObject launcherPrefab_;
 
         [SerializeField, Header("MeteorSpawner")]
@@ -38,7 +45,6 @@
 
         [SerializeField, Header("LaunchPositions ")]
         private List<Transform> launchPositions_;
-
 
         public void AddScore(int point)
         {
@@ -84,7 +90,8 @@
                 GenerateMissile();
             }
             UpdateMeteorTimer();
-        }
+            UpDdateItemTimer();
+    }
 
         //private void GenerateExplosion() {
         //    Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
@@ -152,4 +159,23 @@
             life_ -= point;
             UpdateLifeBar();
         }
+    private ItemBase PickUpItem() { 
+    int itemprefabNum=items_.Count;
+        Assert.IsTrue(itemprefabNum > 0);
+        int pickUpIndex = Random.Range(0, itemprefabNum);
+        ItemBase pickUpItem = items_[pickUpIndex];
+        return pickUpItem;
+        
+
     }
+    private void UpDdateItemTimer() { 
+    itemTimer_-=Time.deltaTime;
+        if(itemTimer_>0){return; }
+        itemTimer_+=itemSpawnInterval_;
+        ItemBase pickedUpItem=PickUpItem();
+        Instantiate(pickedUpItem, itemSpawnPosition_.position, Quaternion.identity);
+
+
+    }
+    }
+
