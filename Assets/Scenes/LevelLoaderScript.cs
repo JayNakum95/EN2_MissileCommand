@@ -11,10 +11,12 @@ public class LevelLoaderScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) {
+        // Load next scene on space key press
+
+       if (Input.GetKeyDown(KeyCode.Space)) {
             loadNextScene();
         }
-        
+
     }
     void loadNextScene() {
     StartCoroutine (LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
