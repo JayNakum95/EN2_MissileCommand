@@ -1,30 +1,48 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class LevelLoaderScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-     
     public Animator transition;
     public float transitionTime = 1f;
 
-    // Update is called once per frame
     void Update()
     {
-        // Load next scene on space key press
+        string current = SceneManager.GetActiveScene().name;
 
-       if (Input.GetKeyDown(KeyCode.Space)) {
-            loadNextScene();
+        if (current == "Title")
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                StartCoroutine(LoadLevelByName("Play"));   // gameplay scene
+            }
         }
 
+        else if (current == "GameOver")
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                StartCoroutine(LoadLevelByName("Title"));
+            }
+        }
+
+        
     }
-    void loadNextScene() {
-    StartCoroutine (LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+
+    
+    public void LoadGameOver()
+    {
+        StartCoroutine(LoadLevelByName("GameOver"));
     }
-    IEnumerator LoadLevel(int levelIndex) { 
-    //play animation
-    transition.SetTrigger("Start");
+
+    IEnumerator LoadLevelByName(string sceneName)
+    {
+        if (transition != null)
+            transition.SetTrigger("Start");
+
         yield return new WaitForSeconds(transitionTime);
-        SceneManager.LoadScene(levelIndex);
+
+        SceneManager.LoadScene(sceneName);
     }
 }

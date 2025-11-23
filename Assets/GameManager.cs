@@ -1,11 +1,13 @@
-    using NUnit.Framework;
-    using UnityEngine;
-    //using UnityEngine.Assertions;
-    using System.Collections.Generic;
+ï»¿using UnityEngine;
+using UnityEngine.Assertions;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     private Camera mainCamera_;
+
     [SerializeField, Header("Prefab")]
     private Explosion explosionPrefab_;
     [SerializeField]
@@ -15,167 +17,199 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Missile missilePrefab_;
     [SerializeField]
-    List<ItemBase> items_;
-    [SerializeField,Header("ItemSetting")]
+    private List<ItemBase> items_;
+
+    [SerializeField, Header("ItemSetting")]
     private Transform itemSpawnPosition_;
     [SerializeField]
     private float itemSpawnInterval_ = 10.0f;
     private float itemTimer_ = 0.0f;
 
-    // NEW: Prefab used to show launcher sprite at each launch position
     [SerializeField, Header("Launcher")]
-        private GameObject launcherPrefab_;
+    private GameObject launcherPrefab_;
 
-        [SerializeField, Header("MeteorSpawner")]
-        private BoxCollider2D ground_;
-        [SerializeField]
-        private float meteorInterval_ = 1.0f;
-        private float meteorTimer_ = 0.0f;
-        [SerializeField]
-        private List<Transform> spawnPositions_;
+    [SerializeField, Header("MeteorSpawner")]
+    private BoxCollider2D ground_;
+    [SerializeField]
+    private float meteorInterval_ = 1.0f;
+    private float meteorTimer_ = 0.0f;
+    [SerializeField]
+    private List<Transform> spawnPositions_;
 
-        [SerializeField, Header("ScoreUISetting")]
-        private ScoreText scoreText_;
-        private int score_;
+    [SerializeField, Header("ScoreUISetting")]
+    private ScoreText scoreText_;
+    private int score_;
 
-        [SerializeField, Header("LifeUISettings")]
-        private LifeBar lifeBar_;
-        [SerializeField] private float maxLife_ = 10.0f;
-        private float life_;
+    [SerializeField, Header("LifeUISettings")]
+    private LifeBar lifeBar_;
+    [SerializeField]
+    private float maxLife_ = 10.0f;
+    private float life_;
 
-        [SerializeField, Header("LaunchPositions ")]
-        private List<Transform> launchPositions_;
+    [SerializeField, Header("LaunchPositions")]
+    private List<Transform> launchPositions_;
 
-        public void AddScore(int point)
+    private void Awake()
+    {
+        // Singleton
+        if (Instance != null && Instance != this)
         {
-            score_ += point;
-            scoreText_.SetScore(score_);
+            Destroy(gameObject);
+            return;
         }
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
-        {
-            GameObject mainCameraObject = GameObject.FindGameObjectWithTag("MainCamera");
-            bool isGetComponent = mainCameraObject.TryGetComponent(out mainCamera_);
-            Assert.IsTrue(isGetComponent, "MainCamera‚ÉcamereƒRƒ“ƒ|[ƒlƒ“ƒg‚ª‚ ‚è‚Ü‚¹‚ñ");
-            Assert.IsTrue(spawnPositions_.Count > 0, "spawnPositions‚É1‚ÂˆÈã‚ÌTransform‚ðƒAƒ^ƒbƒ`‚µ‚Ä‚­‚¾‚³‚¢");
-            foreach (Transform t in spawnPositions_)
-            {
-                Assert.IsNotNull(t, "spawnPositions‚Énull‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·");
-            }
-
-            foreach (Transform t in launchPositions_)
-            {
-                Assert.IsNotNull(t, "launchpositions‚Énull‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·");
-            }
-
-            if (launcherPrefab_ != null && launchPositions_ != null)
-            {
-                foreach (Transform launchT in launchPositions_)
-                {
-                    if (launchT == null) continue;
-                    GameObject launcherInstance = Instantiate(launcherPrefab_, launchT.position, Quaternion.identity, launchT);
-                    launcherInstance.transform.localPosition = Vector3.zero;
-                }
-            }
-
-            ResetLife();
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                GenerateMissile();
-            }
-            UpdateMeteorTimer();
-            UpDdateItemTimer();
+        Instance = this;
+        // DontDestroyOnLoad(gameObject); // if needed across scenes
     }
 
-        //private void GenerateExplosion() {
-        //    Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
-        //    clickPosition.z = 0.0f;
-        //    Explosion explosion = Instantiate(explosionPrefab_, clickPosition, Quaternion.identity);
-        //}
+    public void AddScore(int point)
+    {
+        score_ += point;
+        scoreText_.SetScore(score_);
+    }
 
-        private void GenerateMissile()
+    void Start()
+    {
+        GameObject mainCameraObject = GameObject.FindGameObjectWithTag("MainCamera");
+        bool isGetComponent = mainCameraObject.TryGetComponent(out mainCamera_);
+        Assert.IsTrue(isGetComponent, "MainCameraã«cameraã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
+
+        Assert.IsTrue(spawnPositions_.Count > 0, "spawnPositionsã«1ã¤ä»¥ä¸Šã®Transformã‚’è¿½åŠ ã—ã¦ãã ã•ã„");
+        foreach (Transform t in spawnPositions_)
         {
-            Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
-            clickPosition.z = 0.0f;
+            Assert.IsNotNull(t, "spawnPositionsã«nullãŒå«ã¾ã‚Œã¦ã„ã¾ã™");
+        }
 
-            GameObject reticle = Instantiate(reticlePrefab_, clickPosition, Quaternion.identity);
+        foreach (Transform t in launchPositions_)
+        {
+            Assert.IsNotNull(t, "launchPositionsã«nullãŒå«ã¾ã‚Œã¦ã„ã¾ã™");
+        }
 
-            Transform nearest = null;
-            float minSqrDist = float.MaxValue;
-            if (launchPositions_ != null && launchPositions_.Count > 0)
+        if (launcherPrefab_ != null && launchPositions_ != null)
+        {
+            foreach (Transform launchT in launchPositions_)
             {
-                foreach (Transform launchT in launchPositions_)
+                if (launchT == null) continue;
+                GameObject launcherInstance = Instantiate(launcherPrefab_, launchT.position, Quaternion.identity, launchT);
+                launcherInstance.transform.localPosition = Vector3.zero;
+            }
+        }
+
+        ResetLife();
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            GenerateMissile();
+        }
+
+        UpdateMeteorTimer();
+        UpDdateItemTimer();
+    }
+
+    private void GenerateMissile()
+    {
+        Vector3 clickPosition = mainCamera_.ScreenToWorldPoint(Input.mousePosition);
+        clickPosition.z = 0.0f;
+
+        GameObject reticle = Instantiate(reticlePrefab_, clickPosition, Quaternion.identity);
+
+        Transform nearest = null;
+        float minSqrDist = float.MaxValue;
+
+        if (launchPositions_ != null && launchPositions_.Count > 0)
+        {
+            foreach (Transform launchT in launchPositions_)
+            {
+                if (launchT == null) { continue; }
+                float sqr = (launchT.position - clickPosition).sqrMagnitude;
+                if (sqr < minSqrDist)
                 {
-                    if (launchT == null) { continue; }
-                    float sqr = (launchT.position - clickPosition).sqrMagnitude;
-                    if (sqr < minSqrDist)
-                    {
-                        minSqrDist = sqr;
-                        nearest = launchT;
-                    }
+                    minSqrDist = sqr;
+                    nearest = launchT;
                 }
             }
-
-            Vector3 LaunchPosition = nearest != null ? nearest.position : new Vector3(0f, -3f, 0f);
-
-            Missile missile = Instantiate(missilePrefab_, LaunchPosition, Quaternion.identity);
-            missile.SetUp(reticle);
         }
 
-        private void UpdateMeteorTimer()
-        {
-            meteorTimer_ -= Time.deltaTime;
-            if (meteorTimer_ > 0) { return; }
-            meteorTimer_ += meteorInterval_;
-            GenerateMeteor();
-        }
-        private void GenerateMeteor()
-        {
-            int max = spawnPositions_.Count;
-            int posIndex = Random.Range(0, max);
-            Vector3 spawnPosition = spawnPositions_[posIndex].position;
-            Meteor meteor = Instantiate(meteorPrefab_, spawnPosition, Quaternion.identity);
-            meteor.Setup(ground_, this, explosionPrefab_);
-        }
+        Vector3 launchPosition = nearest != null ? nearest.position : new Vector3(0f, -3f, 0f);
 
-        private void ResetLife()
-        {
-            life_ = maxLife_;
-            UpdateLifeBar();
-        }
-        private void UpdateLifeBar()
-        {
-            float lifeRatio = Mathf.Clamp01(life_ / maxLife_);
-            lifeBar_.SetGaugeRatio(lifeRatio);
-        }
-        public void Damage(float point)
-        {
-            life_ -= point;
-            UpdateLifeBar();
-        }
-    private ItemBase PickUpItem() { 
-    int itemprefabNum=items_.Count;
+        Missile missile = Instantiate(missilePrefab_, launchPosition, Quaternion.identity);
+        missile.SetUp(reticle);
+    }
+
+    private void UpdateMeteorTimer()
+    {
+        meteorTimer_ -= Time.deltaTime;
+        if (meteorTimer_ > 0) { return; }
+        meteorTimer_ += meteorInterval_;
+        GenerateMeteor();
+    }
+
+    private void GenerateMeteor()
+    {
+        int max = spawnPositions_.Count;
+        int posIndex = Random.Range(0, max);
+        Vector3 spawnPosition = spawnPositions_[posIndex].position;
+        Meteor meteor = Instantiate(meteorPrefab_, spawnPosition, Quaternion.identity);
+        meteor.Setup(ground_, this, explosionPrefab_);
+    }
+
+    private void ResetLife()
+    {
+        life_ = maxLife_;
+        UpdateLifeBar();
+    }
+
+    private void UpdateLifeBar()
+    {
+        float lifeRatio = Mathf.Clamp01(life_ / maxLife_);
+        lifeBar_.SetGaugeRatio(lifeRatio);
+    }
+
+    public void Damage(float point)
+    {
+        life_ -= point;
+        UpdateLifeBar();
+    }
+
+    private ItemBase PickUpItem()
+    {
+        int itemprefabNum = items_.Count;
         Assert.IsTrue(itemprefabNum > 0);
         int pickUpIndex = Random.Range(0, itemprefabNum);
         ItemBase pickUpItem = items_[pickUpIndex];
         return pickUpItem;
-        
-
     }
-    private void UpDdateItemTimer() { 
-    itemTimer_-=Time.deltaTime;
-        if(itemTimer_>0){return; }
-        itemTimer_+=itemSpawnInterval_;
-        ItemBase pickedUpItem=PickUpItem();
+
+    private void UpDdateItemTimer()
+    {
+        itemTimer_ -= Time.deltaTime;
+        if (itemTimer_ > 0) { return; }
+        itemTimer_ += itemSpawnInterval_;
+        ItemBase pickedUpItem = PickUpItem();
         Instantiate(pickedUpItem, itemSpawnPosition_.position, Quaternion.identity);
-
-
-    }
     }
 
+    public void OnPlayerDeath()
+    {
+        Debug.Log("Player died!");
+
+        PlayerPrefs.SetInt("LastScore", score_);
+        PlayerPrefs.Save();
+
+        LevelLoaderScript loader = Object.FindFirstObjectByType<LevelLoaderScript>();
+
+        if (loader != null)
+        {
+            loader.LoadGameOver();
+        }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("GameOver");
+        }
+
+        
+    }
+
+}
