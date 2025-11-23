@@ -197,6 +197,13 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("LastScore", score_);
         PlayerPrefs.Save();
+        // High score
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (score_ > highScore)
+        {
+            PlayerPrefs.SetInt("HighScore", score_);
+        }
+        PlayerPrefs.Save();
 
         LevelLoaderScript loader = Object.FindFirstObjectByType<LevelLoaderScript>();
 

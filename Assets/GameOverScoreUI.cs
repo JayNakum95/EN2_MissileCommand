@@ -8,6 +8,9 @@ public class GameOverScoreUI : MonoBehaviour
     void Start()
     {
         int lastScore = PlayerPrefs.GetInt("LastScore", 0);
-        scoreText.text = "Score : " + lastScore.ToString();
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
+
+        scoreText.text = "Score : " + lastScore + "\nHigh Score : " + highScore;
+
     }
 }
